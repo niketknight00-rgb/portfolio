@@ -1,76 +1,50 @@
-// ── NAV TOGGLE (mobile) ──────────────────────
-const navToggle = document.getElementById('navToggle');
-const navLinks  = document.getElementById('navLinks');
-
-navToggle.addEventListener('click', () => {
-  navLinks.classList.toggle('open');
-});
-
-// Close nav when a link is clicked
-navLinks.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => navLinks.classList.remove('open'));
-});
-
-// ── ACTIVE NAV LINK on scroll ────────────────
-const sections = document.querySelectorAll('section[id]');
-const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
-
-function updateActiveNav() {
-  let current = '';
-  sections.forEach(sec => {
-    if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
-  });
-  navAnchors.forEach(a => {
-    a.classList.remove('active');
-    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-  });
-}
-window.addEventListener('scroll', updateActiveNav, { passive: true });
-
-// ── NAV BACKGROUND on scroll ─────────────────
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.style.background = window.scrollY > 60
-    ? 'rgba(13,27,42,0.98)'
-    : 'rgba(13,27,42,0.92)';
-}, { passive: true });
-
-// ── FADE-UP ANIMATIONS ───────────────────────
-function initFadeUps() {
-  const targets = document.querySelectorAll(
-    '.about-grid, .expertise-card, .timeline-item, ' +
-    '.pub-card, .ach-item, .cert-item, .edu-card, ' +
-    '.contact-left, .contact-right, .section-title, .section-label'
-  );
-
-  targets.forEach(el => el.classList.add('fade-up'));
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  targets.forEach(el => observer.observe(el));
-}
-
-// ── STAGGERED CARD ANIMATIONS ────────────────
-function staggerCards(selector, delay = 100) {
-  const cards = document.querySelectorAll(selector);
-  cards.forEach((card, i) => {
-    card.style.transitionDelay = `${i * delay}ms`;
-  });
-}
-
-// ── INIT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    initFadeUps();
-    staggerCards('.expertise-card', 80);
-    staggerCards('.ach-item', 100);
-    staggerCards('.edu-card', 100);
-  }
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const navbar = document.querySelector('.navbar');
+
+    // Toggle Mobile Navigation Window
+    mobileMenu.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        mobileMenu.classList.toggle('open');
+        
+        // Animating individual Hamburger Bars
+        const bars = mobileMenu.querySelectorAll('.bar');
+        if(mobileMenu.classList.contains('open')) {
+            bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
+            bars[1].style.opacity = '0';
+            bars[2].style.transform = 'rotate(45deg) translate(-5px, -6px)';
+        } else {
+            bars[0].style.transform = 'none';
+            bars[1].style.opacity = '1';
+            bars[2].style.transform = 'none';
+        }
+    });
+
+    // Dismiss Menu Session on Mobile Link Selection
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            if(navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                mobileMenu.classList.remove('open');
+                const bars = mobileMenu.querySelectorAll('.bar');
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
+            }
+        });
+    });
+
+    // Dynamically Apply Elegant Scroll Density Blur back to Navbar
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.style.padding = '0.75rem 0';
+            navbar.style.backgroundColor = 'rgba(11, 19, 37, 0.98)';
+            navbar.style.boxShadow = '0 10px 30px rgba(0,0,0,0.15)';
+        } else {
+            navbar.style.padding = '1.25rem 0';
+            navbar.style.backgroundColor = 'rgba(11, 19, 37, 0.95)';
+            navbar.style.boxShadow = 'none';
+        }
+    });
 });
